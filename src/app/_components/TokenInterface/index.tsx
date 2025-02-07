@@ -9,7 +9,52 @@ import { TokenTabs } from "./TokenTabs";
 import TokenHeader from "./TokenHeader";
 import { useAccount } from "wagmi";
 
-const OperationNode = ({ x, y, address, balance, isHighlighted }) => (
+interface OperationNodeProps {
+  x: number;
+  y: number;
+  address: string;
+  balance?: string;
+  isHighlighted: boolean;
+}
+
+interface TransferAnimationProps {
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  amount: string;
+  isActive: boolean;
+}
+
+interface AnimationTextProps {
+  currentOperation: number;
+}
+
+interface Operation {
+  name: string;
+  description: string;
+  from: {
+    x: number;
+    y: number;
+    address: string;
+    balance?: string;
+  };
+  to: {
+    x: number;
+    y: number;
+    address: string;
+    balance?: string;
+  };
+  amount: string;
+}
+
+const OperationNode: React.FC<OperationNodeProps> = ({
+  x,
+  y,
+  address,
+  balance,
+  isHighlighted,
+}) => (
   <motion.div
     className="absolute flex flex-col items-center justify-start"
     style={{ left: `${x}%`, top: y }}
@@ -35,11 +80,13 @@ const OperationNode = ({ x, y, address, balance, isHighlighted }) => (
     <div className="mt-4 text-sm font-medium text-muted-foreground truncate w-full text-center">
       {address.slice(0, 6)}...{address.slice(-4)}
     </div>
-    <div className="mt-1 text-sm font-bold text-primary">{balance} DWG</div>
+    {balance && (
+      <div className="mt-1 text-sm font-bold text-primary">{balance} DWG</div>
+    )}
   </motion.div>
 );
 
-const TransferAnimation = ({
+const TransferAnimation: React.FC<TransferAnimationProps> = ({
   startX,
   startY,
   endX,
@@ -72,7 +119,7 @@ const TransferAnimation = ({
   </AnimatePresence>
 );
 
-const AnimationText = ({ currentOperation }) => {
+const AnimationText: React.FC<AnimationTextProps> = ({ currentOperation }) => {
   const operations = [
     { name: "mint", description: "Minting tokens" },
     { name: "transfer", description: "Transferring tokens" },
@@ -92,11 +139,11 @@ const AnimationText = ({ currentOperation }) => {
   );
 };
 
-const TokenOperations = () => {
-  const [currentOperation, setCurrentOperation] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
+const TokenOperations: React.FC = () => {
+  const [currentOperation, setCurrentOperation] = useState<number>(0);
+  const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
-  const operations = [
+  const operations: Operation[] = [
     {
       name: "mint",
       description: "Minting tokens",
@@ -168,7 +215,7 @@ const TokenOperations = () => {
   );
 };
 
-const TokenInterface = () => {
+const TokenInterface: React.FC = () => {
   const account = useAccount();
 
   return (
